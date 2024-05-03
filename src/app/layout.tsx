@@ -2,6 +2,7 @@ import "~/styles/globals.css";
 import "~/styles/flex-shortcuts.scss";
 
 import { Inter } from "next/font/google";
+import Provider from "~/provider";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -16,12 +17,16 @@ export const metadata = {
 
 export default function RootLayout({
   children,
+  pageProps,
 }: {
   children: React.ReactNode;
+  pageProps: { session: never };
 }) {
   return (
-    <html lang="en">
-      <body className={`font-sans ${inter.variable}`}>{children}</body>
-    </html>
+    <Provider session={pageProps?.session}>
+      <html lang="en">
+        <body className={`font-sans ${inter.variable}`}>{children}</body>
+      </html>
+    </Provider>
   );
 }
