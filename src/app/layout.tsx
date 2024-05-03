@@ -1,4 +1,5 @@
 import "~/styles/globals.css";
+import "~/styles/flex-shortcuts.scss";
 
 import { Inter } from "next/font/google";
 
