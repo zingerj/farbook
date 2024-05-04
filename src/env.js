@@ -23,6 +23,7 @@ export const env = createEnv({
       process.env.VERCEL ? z.string() : z.string().url(),
     ),
     RPC_URL: z.string().url(),
+    NEYNAR_API_KEY: z.string(),
   },
 
   /**
@@ -44,6 +45,7 @@ export const env = createEnv({
     NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,
     NEXTAUTH_URL: process.env.NEXTAUTH_URL,
     RPC_URL: process.env.RPC_URL,
+    NEYNAR_API_KEY: process.env.NEYNAR_API_KEY,
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially
