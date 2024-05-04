@@ -22,6 +22,7 @@ export const env = createEnv({
       // VERCEL_URL doesn't include `https` so it cant be validated as a URL
       process.env.VERCEL ? z.string() : z.string().url(),
     ),
+    RPC_URL: z.string().url(),
     NEYNAR_API_KEY: z.string(),
   },
 
@@ -43,6 +44,7 @@ export const env = createEnv({
     NODE_ENV: process.env.NODE_ENV,
     NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,
     NEXTAUTH_URL: process.env.NEXTAUTH_URL,
+    RPC_URL: process.env.RPC_URL,
     NEYNAR_API_KEY: process.env.NEYNAR_API_KEY,
   },
   /**

@@ -1,12 +1,9 @@
-import { PrismaAdapter } from "@auth/prisma-adapter";
 import {
   getServerSession,
   type DefaultSession,
   type NextAuthOptions,
 } from "next-auth";
-import { type Adapter } from "next-auth/adapters";
-
-import { db } from "~/server/db";
+import Credentials from "next-auth/providers/credentials";
 
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
@@ -17,10 +14,8 @@ import { db } from "~/server/db";
 declare module "next-auth" {
   interface Session extends DefaultSession {
     user: {
-      id: string;
-      // ...other properties
-      // role: UserRole;
-    } & DefaultSession["user"];
+      fid: number;
+    };
   }
 
   // interface User {
@@ -36,16 +31,58 @@ declare module "next-auth" {
  */
 export const authOptions: NextAuthOptions = {
   callbacks: {
-    session: ({ session, user }) => ({
-      ...session,
-      user: {
-        ...session.user,
-        id: user.id,
+    async jwt({ token, user, account, profile, isNewUser }) {
+      console.log("jwt", { token, user, account, profile, isNewUser });
+      return {
+        ...token,
+        user,
+      };
+    },
+    session: ({ session, token, ...props }) => {
+      console.log({ session, token, ...props });
+      if (!token.sub) {
+        return session;
+      }
+      return {
+        ...session,
+        user: {
+          fid: parseFloat(token.sub),
+        },
+      };
+    },
+  },
+  session: { strategy: "jwt" },
+  providers: [
+    Credentials({
+      credentials: {
+        fid: { label: "fid", type: "string" },
+        username: { label: "username", type: "text" },
+        bio: { label: "bio", type: "text" },
+        display_name: { label: "displayName", type: "text" },
+        pfp_url: { label: "pfpUrl", type: "text" },
+        verifications: { label: "verifications", type: "text" },
+        custody: { label: "custody", type: "text" },
+      },
+      async authorize(c) {
+        // if the user calls the route with no fid, return null
+        if (!c?.fid) return null;
+
+        // populate the user object
+        const user = {
+          id: c.fid,
+          fid: parseFloat(c.fid),
+          username: c.username,
+          bio: c.bio,
+          display_name: c.display_name,
+          pfp_url: c.pfp_url,
+          verifications: c.verifications,
+          custody: c.custody,
+        };
+
+        // return the user object signs them in
+        return user;
       },
     }),
-  },
-  adapter: PrismaAdapter(db) as Adapter,
-  providers: [
     /**
      * ...add more providers here.
      *
